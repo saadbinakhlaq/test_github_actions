@@ -6,5 +6,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-      - uses: dtolnay/install-buck2@latest
+      - uses: ./.github/actions/install-buck2
       - run: buck2 build //:hello_world --show-output
