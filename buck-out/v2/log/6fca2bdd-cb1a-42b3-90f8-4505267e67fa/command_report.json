@@ -1,0 +1,10 @@
+{
+  "trace_id": "6fca2bdd-cb1a-42b3-90f8-4505267e67fa",
+  "exit_code": 3,
+  "error_messages": [
+    "package `root//hello_world:` does not exist\n         ^---------------^\n    dir `root//hello_world` does not exist"
+  ],
+  "finalizing_error_messages": [
+    "'invocation recorder' failed to finalize\n\nCaused by:\n    Scribe sink not enabled (internal error)"
+  ]
+}
