@@ -12,7 +12,12 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const prBody = context.payload.pull_request.body;
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.warning("⚠️ No pull_request context found (maybe running locally with act). Skipping description check.");
+              return;
+            }
+            const prBody = pr.body;
             if (!prBody || prBody.trim().length === 0) {
               core.setFailed("❌ PR description is missing. Please provide a detailed description.");
             } else {
