@@ -1,0 +1,17 @@
+name: PR Title Format Check
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        uses: amannn/action-pull-request-title@v3
+        with:
+          pattern: '^\[[A-Z]+-\d+\]\s\w+: .+'
+          fail-on-non-compliance: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
