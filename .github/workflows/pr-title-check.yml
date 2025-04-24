@@ -14,10 +14,12 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const title = pr?.title ?? "";
-            const pattern = /^\[[A-Z]+-\d+\]\s\w+: .+/;
+
+            // Matches: [ABC-123] fix(core): Some message
+            const pattern = /^\[[A-Z]+-\d+\]\s(?:feat|fix|chore|docs|refactor|style|test|perf|build|ci|revert)(\([^)]+\))?:\s.+$/;
 
             if (!pattern.test(title)) {
-              core.setFailed(`❌ PR title "${title}" does not match the required format "[JIRA-123] Action: Description".`);
+              core.setFailed(`❌ PR title "${title}" does not match the required format like "[TEST-123] fix(xyz): Your message"`);
             } else {
-              console.log("✅ PR title format is correct.");
+              console.log("✅ PR title format is valid.");
             }
