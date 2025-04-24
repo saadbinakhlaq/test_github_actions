@@ -5,13 +5,19 @@ on:
     types: [opened, edited, reopened, synchronize]
 
 jobs:
-  check-title:
+  check-pr-title:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR title format
-        uses: amannn/action-pull-request-title@v3
+        uses: actions/github-script@v7
         with:
-          pattern: '^\[[A-Z]+-\d+\]\s\w+: .+'
-          fail-on-non-compliance: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const title = pr?.title ?? "";
+            const pattern = /^\[[A-Z]+-\d+\]\s\w+: .+/;
+
+            if (!pattern.test(title)) {
+              core.setFailed(`❌ PR title "${title}" does not match the required format "[JIRA-123] Action: Description".`);
+            } else {
+              console.log("✅ PR title format is correct.");
+            }
