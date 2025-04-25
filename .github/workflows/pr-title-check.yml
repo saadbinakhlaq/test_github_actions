@@ -16,7 +16,7 @@ jobs:
             const title = pr?.title ?? "";
 
             // Matches: [ABC-123] fix(core): Some message
-            const pattern = /^\[[A-Z]+-\d+\]\s\w+: .+/;
+            const pattern = /^\[[A-Z]+-\d+\]\s\S+(?:\([^)]+\))?:\s.+$/
 
             if (!pattern.test(title)) {
               core.setFailed(`❌ PR title "${title}" does not match the required format like "[TEST-123] fix(xyz): Your message"`);
