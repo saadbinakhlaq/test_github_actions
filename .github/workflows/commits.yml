@@ -29,7 +29,7 @@ jobs:
           echo "$commits"
 
           # Define regex
-          regex="^(\[[A-Z]+-\d+\]\s)?(feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?:\s.+$"
+          regex='^(\[[A-Z]+-[0-9]+\] )?(feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+$'
 
           failed=0
 
