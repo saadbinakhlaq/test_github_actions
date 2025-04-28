@@ -1,14 +1,20 @@
-name: Commit Message Format Check
+name: Validate Commit Messages
 
 on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
-  check-description:
+  validate-commit-messages:
     runs-on: ubuntu-latest
     steps:
-        - name: Validate commit messages
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fetch all commits
+        run: git fetch --depth=2
+
+      - name: Validate commit messages
         run: |
             commits=$(git log origin/${{ github.event.pull_request.base.ref }}..HEAD --pretty=format:"%s")
             echo "Checking commit messages:"
