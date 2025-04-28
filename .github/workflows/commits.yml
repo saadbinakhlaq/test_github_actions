@@ -15,17 +15,29 @@ jobs:
 
       - name: Validate commit messages
         run: |
-          echo "Act $ACT"
-          base_branch="${{ github.event.pull_request.base.ref }}"
-          echo "Base branch is: $base_branch"
+          if [ -n "$ACT" ]; then
+            # Local act run
+            base_branch="master"  # or whatever your default is
+            echo "Running locally, assuming base branch: $base_branch"
+          else
+            # Real GitHub Actions
+            base_branch="${{ github.event.pull_request.base.ref }}"
+            echo "Running on GitHub Actions, base branch is: $base_branch"
+          fi
 
-          # Make sure we have the latest refs
-          git fetch origin $base_branch
+          if [ -z "$ACT" ]; then
+            echo "Fetching base branch $base_branch..."
+            git fetch origin $base_branch
+          fi
 
           # Get commits that are only in this branch and not in base branch
           commits=$(git log --no-merges --pretty=format:"%s" origin/$base_branch..HEAD)
 
           echo "Checking commit messages:"
+          if [ -z "$commits" ]; then
+            echo "::error ::No commits found between $base_branch and $current_branch."
+            exit 0
+          fi          
           echo "$commits"
 
           # Define regex
