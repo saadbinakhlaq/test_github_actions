@@ -15,6 +15,7 @@ jobs:
 
       - name: Validate commit messages
         run: |
+          echo "Act $ACT"
           base_branch="${{ github.event.pull_request.base.ref }}"
           echo "Base branch is: $base_branch"
 
