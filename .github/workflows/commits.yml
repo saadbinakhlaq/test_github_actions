@@ -16,28 +16,32 @@ jobs:
 
       - name: Validate commit messages
         run: |
-            commits=$(git log origin/${{ github.event.pull_request.base.ref }}..HEAD --pretty=format:"%s")
-            echo "Checking commit messages:"
-            echo "$commits"
+          # Fetch base and head SHA from pull_request event
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
 
-            regex="^\[JIRA-[0-9]+\] (feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+"
+          echo "Base SHA: $base_sha"
+          echo "Head SHA: $head_sha"
 
-            failed=0
+          # Get commit messages between base and head
+          commits=$(git log --no-merges --pretty=format:"%s" $base_sha..$head_sha)
 
-            while IFS= read -r commit; do
-            # Skip merge commits
-            if [[ "$commit" == Merge* ]]; then
-                echo "Skipping merge commit: '$commit'"
-                continue
-            fi
+          echo "Checking commit messages:"
+          echo "$commits"
 
+          # Define regex
+          regex="^\[JIRA-[0-9]+\] (feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+"
+
+          failed=0
+
+          while IFS= read -r commit; do
             if [[ ! $commit =~ $regex ]]; then
-                echo "::error ::Invalid commit message: '$commit'"
-                failed=1
+              echo "::error ::Invalid commit message: '$commit'"
+              failed=1
             fi
-            done <<< "$commits"
+          done <<< "$commits"
 
-            if [ "$failed" -eq 1 ]; then
+          if [ "$failed" -eq 1 ]; then
             echo "One or more commit messages do not follow the conventional commit format."
             exit 1
-            fi
+          fi
