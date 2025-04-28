@@ -1,0 +1,37 @@
+name: PR Description Check
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  check-description:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Validate commit messages
+        run: |
+            commits=$(git log origin/${{ github.event.pull_request.base.ref }}..HEAD --pretty=format:"%s")
+            echo "Checking commit messages:"
+            echo "$commits"
+
+            regex="^\[JIRA-[0-9]+\] (feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+"
+
+            failed=0
+
+            while IFS= read -r commit; do
+            # Skip merge commits
+            if [[ "$commit" == Merge* ]]; then
+                echo "Skipping merge commit: '$commit'"
+                continue
+            fi
+
+            if [[ ! $commit =~ $regex ]]; then
+                echo "::error ::Invalid commit message: '$commit'"
+                failed=1
+            fi
+            done <<< "$commits"
+
+            if [ "$failed" -eq 1 ]; then
+            echo "One or more commit messages do not follow the conventional commit format."
+            exit 1
+            fi
