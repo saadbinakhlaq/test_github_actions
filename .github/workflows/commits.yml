@@ -10,21 +10,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Fetch all commits
-        run: git fetch --depth=0
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags
 
       - name: Validate commit messages
         run: |
-          # Fetch base and head SHA from pull_request event
-          base_sha="${{ github.event.pull_request.base.sha }}"
-          head_sha="${{ github.event.pull_request.head.sha }}"
+          base_branch="${{ github.event.pull_request.base.ref }}"
+          echo "Base branch is: $base_branch"
 
-          echo "Base SHA: $base_sha"
-          echo "Head SHA: $head_sha"
+          # Make sure we have the latest refs
+          git fetch origin $base_branch
 
-          # Get commit messages between base and head
-          commits=$(git log --no-merges --pretty=format:"%s" $base_sha..$head_sha)
+          # Get commits that are only in this branch and not in base branch
+          commits=$(git log --no-merges --pretty=format:"%s" origin/$base_branch..HEAD)
 
           echo "Checking commit messages:"
           echo "$commits"
