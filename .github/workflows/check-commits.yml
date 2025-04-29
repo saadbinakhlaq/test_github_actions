@@ -1,0 +1,31 @@
+name: Validate Commit Messages
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-commit-messages:
+    runs-on: ubunbtu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags
+
+      - name: Validate commit messages
+        run: |
+          # Get latest commit message
+          latest_commit_msg=$(git log --no-merges -1 --pretty=format:"%s")
+          echo "$latest_commit_msg"
+
+          # Define regex
+          regex='^(\[[A-Z]+-[0-9]+\] )?(feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+$'
+
+          if [[ ! $latest_commit_msg =~ $regex ]]; then
+            echo "::error ::Invalid commit message: '$latest_commit_msg'"
+            echo "Commit message does not follow conventional commit format."
+            exit 1
+          else
+            echo "Commit message is valid."
+          fi
