@@ -14,5 +14,4 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const title = pr?.title ?? "";
-
             console.log(`PR title: ${title}`);
