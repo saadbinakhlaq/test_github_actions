@@ -1,0 +1,35 @@
+name: Validate Commit Message
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-commit-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed to access full commit history
+
+      - name: Validate latest commit message
+        run: |
+          if [ -n "$ACT" ]; then
+            echo "Running locally"
+          else
+            echo "Running on GitHub Actions"
+          fi
+
+          latest_commit_msg=$(git log -1 --pretty=format:"%s")
+          echo "Latest commit message: $latest_commit_msg"
+
+          regex='^(\[[A-Z]+-[0-9]+\] )?(feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+$'
+
+          if [[ ! $latest_commit_msg =~ $regex ]]; then
+            echo "::error ::Invalid commit message: '$latest_commit_msg'"
+            echo "Commit message does not follow conventional commit format."
+            exit 1
+          else
+            echo "Commit message is valid."
+          fi
