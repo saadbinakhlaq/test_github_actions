@@ -21,7 +21,7 @@ jobs:
             echo "Running on GitHub Actions"
           fi
 
-          latest_commit_msg=$(git log -1 --pretty=format:"%s")
+          latest_commit_msg=$(git log --no-merges -1 --pretty=format:"%s")
           echo "Latest commit message: $latest_commit_msg"
 
           regex='^(\[[A-Z]+-[0-9]+\] )?(feat|fix|chore|docs|style|refactor|perf|test|build|ci)(\([^)]+\))?: .+$'
