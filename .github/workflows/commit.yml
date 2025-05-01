@@ -1,0 +1,31 @@
+# .github/workflows/conventional-commits.yml
+name: Validate Conventional Commits
+
+on:
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  commit-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get last commit message
+        run: |
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+          msg=$(git log -1 --pretty=%B)
+          echo "Last commit message: $msg"
+          echo "$msg" > commit_message.txt
+
+      - name: Validate with conventional commits
+        run: |
+          msg=$(cat commit_message.txt)
+          echo "$msg"
+          if ! echo "$msg" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z]+\))?: .+'; then
+            echo "❌ Commit message does not follow Conventional Commits"
+            exit 1
+          else
+            echo "✅ Commit message is valid"
+          fi
