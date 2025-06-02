@@ -32,10 +32,28 @@ jobs:
               core.warning("⚠️ No pull_request context found (maybe running locally with act). Skipping comment.");
               return;
             }
-
-            github.rest.issues.createComment({
+            const { data: comments } = await github.rest.issues.listComments({
               issue_number: pr.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body
-            });
+            });      
+            const existingComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.startsWith('### 🧹 Maintainability Check')
+            );                  
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                comment_id: existingComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: pr.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              });
+            }

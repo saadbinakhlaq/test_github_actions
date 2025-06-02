@@ -1,7 +1,7 @@
 def write_maintainability_violations_to_file() -> None:
     message = (
         f"### 🧹 Maintainability Check\n\n"
-        f"Some functions or modules have a maintainability index below 20. "
+        f"Some functions or modules have a maintainability index below 30. "
         f"Consider reviewing them for opportunities to simplify or clarify.\n\n"
     )
 
