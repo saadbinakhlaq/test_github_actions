@@ -24,16 +24,14 @@ jobs:
             const fs = require('fs');
             const pr = context.payload.pull_request;
             const body = fs.readFileSync('check_maintainability_violations.md', 'utf8');
-
             if (!pr) {
               core.warning("⚠️ No pull_request context found (maybe running locally with act). Skipping comment.");
               return;
             }
 
-            await github.rest.issues.createComment({
-                issue_number: pr.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body
-              });
-
+            github.rest.issues.createComment({
+              issue_number: pr.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
